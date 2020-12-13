@@ -1,0 +1,40 @@
+version: '3'
+
+networks:
+  birdboard_expressjs:
+
+services:  
+  mysql:
+    image: mysql:5.7.22
+    container_name: birdboard_expressjs_mysql
+    restart: unless-stopped
+    tty: true
+    ports:
+     - "5000:3306"
+    volumes:
+     - ./mysql:/var/lib/mysql
+    environment:
+      MYSQL_DATABASE: birdboard_expressjs
+      MYSQL_USER: diegovilla
+      MYSQL_PASSWORD: birdboard_expressjs
+      MYSQL_ROOT_PASSWORD: birdboard_expressjs
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    networks:
+      - birdboard_expressjs
+
+  server:
+    container_name: birdboard_expressjs_server
+    restart: unless-stopped
+    build: .
+    ports: 
+      - "5001:3000"
+    depends_on: 
+      - mysql
+    environment:
+      MYSQL_HOST: birdboard_expressjs_mysql
+      MYSQL_USER: diegovilla
+      MYSQL_PASSWORD: birdboard_expressjs
+      MYSQL_DATABASE: birdboard_expressjs
+    networks:
+      - birdboard_expressjs
